@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeClient1", "SnakeClient\SnakeClient1.csproj", "{A7029425-90B0-474C-8FDB-924772958269}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeClient", "SnakeClient\SnakeClient.csproj", "{A7029425-90B0-474C-8FDB-924772958269}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeAPI", "..\..\CSharp2019\SnakeAPI\SnakeAPI.csproj", "{65092F65-CAD6-4C60-884B-0FD3FB4F655A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A7029425-90B0-474C-8FDB-924772958269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7029425-90B0-474C-8FDB-924772958269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7029425-90B0-474C-8FDB-924772958269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65092F65-CAD6-4C60-884B-0FD3FB4F655A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65092F65-CAD6-4C60-884B-0FD3FB4F655A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65092F65-CAD6-4C60-884B-0FD3FB4F655A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65092F65-CAD6-4C60-884B-0FD3FB4F655A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

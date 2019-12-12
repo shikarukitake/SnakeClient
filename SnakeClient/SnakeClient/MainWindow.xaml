@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="800" Width="800">
     
     <Window.InputBindings>
         <!--  Movement commands  -->
@@ -43,29 +43,29 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.1*" />
         </Grid.RowDefinitions>
         <ItemsControl Grid.Row="0" ItemsSource="{Binding Cells}" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="{Binding Height}"
-                                    Columns="{Binding Width}" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                    <Canvas Background="{Binding Color}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding Height}" Margin="20,20,20,20"
+                                 Columns="{Binding Width}" 
+                                 />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Rectangle Fill="{Binding Color}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-
-        <StackPanel Grid.Row="1" DataContext="{Binding SelectedPhone}" Orientation="Horizontal">
+        
+        <StackPanel Grid.Row="1" DataContext="{Binding SelectedPhone}" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" >
             <StackPanel Margin="10,0,10,0">
             <TextBlock Text="Width" />
             <TextBox Width="50"  Text="{Binding Path=Width, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
-            <StackPanel>
+            <StackPanel >
                 <TextBlock Text="Height" />
                 <TextBox Width="50" Text="{Binding Path=Height, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
@@ -74,8 +74,11 @@
                 <TextBox Width="50" Text="{Binding Path=TimeUntilNextTurnMS, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Command="{Binding AddCommand}" CommandParameter="{Binding SelectedPhone}">+</Button>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Button Command="{Binding AddCommand}" CommandParameter="{Binding SelectedPhone}" MinWidth="80" Content="{Binding CreateMap}"/>
+            <Button Command="{Binding GetCommand}" MinWidth="80">PlayGame</Button>
         </StackPanel>
+
+
     </Grid>
 </Window>
