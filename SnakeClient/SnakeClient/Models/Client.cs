@@ -16,10 +16,9 @@ namespace SnakeClient
         public Client(string uri)
         {
             _restClient = new RestClient(uri);
-            _restClient.AddHandler("*", new JsonDeserializer());
         }
 
-        public async Task<GameBoard> GetSnakeAsync()
+        public async Task<GameBoard> GetBoardAsync()
         {
             var request = new RestRequest("api/snake/get");
             var response = await _restClient.ExecuteGetTaskAsync<GameBoard>(request);

@@ -5,10 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="500">
-    
+        Title="Snake" Height="500" Width="500"
+        Background="Black" WindowStyle="None" Opacity="0.9"
+        BorderBrush="SpringGreen"
+        BorderThickness="3"
+        Name ="window"
+        WindowStartupLocation="CenterScreen">
+
     <Window.InputBindings>
-        <!--  Movement commands  -->
+        <!--  Movement   -->
         <KeyBinding
             Key="Up"
             Command="{Binding KeyPressedCommand}"
@@ -25,9 +30,15 @@
             Key="Left"
             Command="{Binding KeyPressedCommand}"
             CommandParameter="Left" />
+        <KeyBinding 
+            Key="Esc"
+            Command="{Binding QuitCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
         <!--  Option commands  -->
     </Window.InputBindings>
-    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="410" GlassFrameThickness="0" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="14" />
@@ -43,14 +54,26 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="0.15*" />
         </Grid.RowDefinitions>
-        <ItemsControl Grid.Row="0" ItemsSource="{Binding Cells}" BorderThickness="2" BorderBrush="SpringGreen">
+        
+        <TextBlock
+            Grid.Row="0"
+            Margin="0,0,0,0"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center"
+            FontSize="40"
+            Style="{StaticResource BaseTextBlock}"
+            Text="SNAKE" />
+        
+        <ItemsControl Grid.Row="0" ItemsSource="{Binding Cells}" 
+                      BorderThickness="2" 
+                      BorderBrush="SpringGreen" 
+                      Margin="35,35,35,35">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="{Binding Height}" Margin="20,20,20,20"
-                                 Columns="{Binding Width}" 
-                                 />
+                    <UniformGrid Rows="{Binding Height}" 
+                                 Columns="{Binding Width}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -59,27 +82,79 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        
-        <StackPanel Grid.Row="1" DataContext="{Binding SelectedPhone}" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" >
-            
+        <TextBlock
+            Grid.Row="0"
+            Margin="0,0,0,0"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Center"
+            FontSize="20"
+            Style="{StaticResource BaseTextBlock}">
+                <Run Text="PRESS " />
+                <Run Foreground="Purple" Text=" ESC" />
+                <Run Text=" TO  QUIT" />
+        </TextBlock>
+        <StackPanel Grid.Row="1"
+                    DataContext="{Binding SelectedMap}"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" >
             <StackPanel Margin="10,0,10,0">
-            <TextBlock Text="Width" />
-            <TextBox Width="50"  Text="{Binding Path=Width, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Width" Style="{StaticResource BaseTextBlock}"/>
+                <TextBox Style="{StaticResource BaseStyle}" 
+                         Width="50" Text="{Binding Path=Width, UpdateSourceTrigger=PropertyChanged}"
+                         Background="Black" 
+                         BorderBrush="White" 
+                         Foreground="White" 
+                         SelectionBrush="#FFE80375" 
+                         CaretBrush="White"
+                         FontFamily="{StaticResource ArcadeClassic}"/>
             </StackPanel>
             <StackPanel >
-                <TextBlock Text="Height" />
-                <TextBox Width="50" Text="{Binding Path=Height, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Height" Style="{StaticResource BaseTextBlock}"/>
+                <TextBox Style="{StaticResource BaseStyle}"
+                         Width="50"
+                         Text="{Binding Path=Height, UpdateSourceTrigger=PropertyChanged}" 
+                         BorderBrush="White"
+                         Background="Black" 
+                         SelectionBrush="#FFE80375" 
+                         Foreground="White" 
+                         CaretBrush="White"
+                         FontFamily="{StaticResource ArcadeClassic}"/>
             </StackPanel>
-            <StackPanel>
-                <TextBlock Text="TurnTime MS" />
-                <TextBox Width="50" Text="{Binding Path=TimeUntilNextTurnMS, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Margin="5,0,0,0" VerticalAlignment="Bottom">
+                <TextBlock Text="TurnTime MS" Style="{StaticResource BaseTextBlock}"/>
+                <TextBox Style="{StaticResource BaseStyle}"
+                         Width="50"
+                         Text="{Binding Path=TimeUntilNextTurnMS, UpdateSourceTrigger=PropertyChanged}"
+                         Background="Black"
+                         BorderBrush="White"
+                         Foreground="White"
+                         SelectionBrush="#FFE80375"
+                         FontFamily="{StaticResource ArcadeClassic}"
+                         CaretBrush="White"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-            <Button Command="{Binding AddCommand}" CommandParameter="{Binding SelectedPhone}" MinWidth="80" Content="{Binding CreateMap}"/>
-            <Button Command="{Binding GetCommand}" MinWidth="80">PlayGame</Button>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10">
+            <Button Style="{StaticResource BaseStyle}"
+                    Command="{Binding AddCommand}" 
+                    CommandParameter="{Binding SelectedMap}" 
+                    MinWidth="80" 
+                    Content="{Binding CreateMap}"
+                    FontFamily="{StaticResource ArcadeClassic}"
+                    Background="Black"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2" />
+            <Button Style="{StaticResource BaseStyle}"
+                    Command="{Binding PlayCommand}"
+                    MinWidth="80"
+                    Content="PlayGame"
+                    FontFamily="{StaticResource ArcadeClassic}"
+                    Background="Black"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2" />
         </StackPanel>
-
 
     </Grid>
 </Window>

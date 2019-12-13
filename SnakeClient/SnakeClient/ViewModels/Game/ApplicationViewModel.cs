@@ -16,8 +16,7 @@ namespace SnakeClient
 {
     public class ApplicationViewModel : INotifyPropertyChanged
     {
-        private Map map;
-        public ObservableCollection<Map> Phones { get; set; }
+        #region Public props
         public int Width { get; set; }
         public int Height { get; set; }
         public int Turn { get; set; }
@@ -26,22 +25,51 @@ namespace SnakeClient
         public bool WantPlaying { get; set; }
         DispatcherTimer timer { get; set; }
         public Client APISnakeClient { get; set; }
+        #endregion
 
+        #region props OnPropertyChanged
+        private Map map;
+        public Map SelectedMap
+        {
+            get { return map; }
+            set
+            {
+                map = value;
+                OnPropertyChanged("SelectedPhone");
+            }
+        }
         private string createMap;
-        public string CreateMap { get { return createMap; } set {
+        public string CreateMap
+        {
+            get { return createMap; }
+            set
+            {
                 createMap = value;
                 OnPropertyChanged("CreateMap");
-            } }
-        GameBoard Game;
+            }
+        }
 
+        //From presentation
         public ObservableCollection<Cell> Cells
         {
             get => _cells;
             private set { _cells = value; OnPropertyChanged(); }
         }
         private ObservableCollection<Cell> _cells = new ObservableCollection<Cell>();
-        
-        // команда добавления нового объекта
+        #endregion
+
+        #region constructor
+        public ApplicationViewModel()
+        {
+            SelectedMap = new Map(20, 20, 1000);
+            KeyPressedCommand = new RelayCommand((parameter) => KeyPressed(parameter));
+            APISnakeClient = new Client("https://localhost:44317");
+            CreateMap = "CreateMap";
+        }
+        #endregion
+
+        #region commands
+        // команда создания карты
         private RelayCommand addCommand;
         public RelayCommand AddCommand
         {
@@ -53,20 +81,15 @@ namespace SnakeClient
                       Map _map = obj as Map;
                       if (_map != null)
                       {
-                          /*if (GameIsStarted)
-                              APISnakeClient.StartGame().ContinueWith(t => { timer.Stop(); });*/
                           if (WantPlaying)
                           {
                               APISnakeClient.StartGame().ContinueWith(t =>
                                  { WantPlaying = !WantPlaying; });
-                              //timer.Stop();
                           }
                           Width = _map.Width;
                           Height = _map.Height;
                           TimeTo = _map.TimeUntilNextTurnMS / 10;
-                          //timer.Interval = TimeSpan.FromMilliseconds(_map.TimeUntilNextTurnMS);
-                          //timer.Tick += timer_Tick;
-                          System.Net.HttpStatusCode StatusCode = System.Net.HttpStatusCode.BadRequest;
+                          System.Net.HttpStatusCode StatusCode;
                           APISnakeClient.CreateMap(_map, GameIsStarted).ContinueWith(t =>
                           {
                               StatusCode = t.Result;
@@ -81,10 +104,11 @@ namespace SnakeClient
                           });
                       }
 
-                  }, c => (Width > 3 && Height > 3) && (Height == Width)));
+                  }, c => Height == Width));
             }
         }
 
+        // команда начала игры
         private RelayCommand playCommand;
         public RelayCommand PlayCommand
         {
@@ -98,118 +122,40 @@ namespace SnakeClient
                           WantPlaying = !WantPlaying;
                           if (WantPlaying)
                               UpdateView();
-                            //timer.Start();
                           else
                               WantPlaying = !WantPlaying;
-
-                              //timer.Stop();
                           Turn = -1;
-
                       });
                   }, c => WantPlaying == false));
             }
         }
 
+        // команда закрытия окна
+        private RelayCommand quitCommand;
+        public RelayCommand QuitCommand
+        {
+            get
+            {
+                return quitCommand ??
+                    (quitCommand = new RelayCommand(obj =>
+                    {
+                        var window = obj as Window;
+                        window.Close();
+                    })
+                );
+            }
+        }
+
+        // команды для стрелок чтобы перемещаться
         public ICommand KeyPressedCommand { get; set; }
-        
         private void KeyPressed(object parameter)
         {
             var key = (string)parameter;
             APISnakeClient.DirectionChange(key).ContinueWith(t => { });
         }
+        #endregion
 
-        public Map SelectedMap
-        {
-            get { return map; }
-            set
-            {
-                map = value;
-                OnPropertyChanged("SelectedPhone");
-            }
-        }
-
-        
-        public ApplicationViewModel()
-        {
-            Phones = new ObservableCollection<Map>();
-            SelectedMap = new Map(20, 20, 1000);
-            KeyPressedCommand = new RelayCommand((parameter) => KeyPressed(parameter));
-            timer = new DispatcherTimer();
-            APISnakeClient = new Client("https://localhost:44317");
-            CreateMap = "CreateMap";
-            Game = null;
-        }
-        /*
-        void timer_Tick(object sender, EventArgs e)
-        {
-            Snake snake = null;
-            GameBoard Game = APISnakeClient.GetBoard();
-            if (Game != null)
-                snake = Game._Snake;
-
-            if (snake != null)//&& Turn != Game.TurnNumber)
-            {
-                try
-                {
-                    //Turn = Game.TurnNumber;
-                    Cells = new ObservableCollection<Cell>();
-                    Cords cord = new Cords(0, 0);
-
-                    for (cord.Y = 1; cord.Y <= Height; cord.Y++)
-                    {
-                        for (cord.X = 1; cord.X <= Width; cord.X++)
-                        {
-                            if (!snake.CheckCollision(cord))
-                                Cells.Add(new Cell("Green"));
-                            else if (snake.CordsCmp(snake.Food, cord))
-                                Cells.Add(new Cell("Red"));
-                            else
-                                Cells.Add(new Cell("White"));
-                        }
-                    }
-                }
-                catch (Exception E) { }
-            }
-        }*/
-            /*
-            void timer_Tick(object sender, EventArgs e)
-            {
-
-                APISnakeClient.GetSnakeAsync().ContinueWith(t =>
-                {
-                    Game = t.Result;
-                });
-                if (Game != null)
-                {
-                    try
-                    {
-                        if (Turn != Game.TurnNumber)
-                        {
-                            Snake snake = Game._Snake;
-                            Turn = Game.TurnNumber;
-                            ObservableCollection<Cell> _Cells = new ObservableCollection<Cell>();
-                            Cords cord = new Cords(0, 0);
-
-                            for (cord.Y = 1; cord.Y <= Height; cord.Y++)
-                            {
-                                for (cord.X = 1; cord.X <= Width; cord.X++)
-                                {
-                                    if (!snake.CheckCollision(cord))
-                                        _Cells.Add(new Cell("Green"));
-                                    else if (snake.CordsCmp(snake.Food, cord))
-                                        _Cells.Add(new Cell("Red"));
-                                    else
-                                        _Cells.Add(new Cell("White"));
-
-                                }
-                            }
-                            Cells = _Cells;
-                        }
-                    }
-                    catch (Exception E) { }
-                }
-            }*/
-
+        // Метод для обновления содержимого отображаемой игровой карты 
         public async void UpdateView()
         {
             await Task.Run(() => {
@@ -225,12 +171,10 @@ namespace SnakeClient
                         {
                             Snake snake = null;
                             GameBoard Game = APISnakeClient.GetBoard();
-                            //APISnakeClient.GetSnakeAsync().ContinueWith(t => { TurnNumber = t.Result.TurnNumber; });
                             if (Game != null)
                                 TurnNumber = Game.TurnNumber;
                             if (Turn != TurnNumber && Game != null)
                             {
-
                                 snake = Game._Snake;
                                 Turn = TurnNumber;
                                 ObservableCollection<Cell> _Cells = new ObservableCollection<Cell>();
@@ -241,12 +185,11 @@ namespace SnakeClient
                                     for (cord.X = 1; cord.X <= Width; cord.X++)
                                     {
                                         if (!snake.CheckCollision(cord))
-                                            _Cells.Add(new Cell("Green"));
-                                        else if (snake.CordsCmp(snake.Food, cord))
-                                            _Cells.Add(new Cell("Red"));
-                                        else
                                             _Cells.Add(new Cell("White"));
-
+                                        else if (snake.CordsCmp(snake.Food, cord))
+                                            _Cells.Add(new Cell("SpringGreen"));
+                                        else
+                                            _Cells.Add(new Cell("Black"));
                                     }
                                 }
                                 Cells = _Cells;
@@ -259,117 +202,6 @@ namespace SnakeClient
                 }
             });
         }
-
-        /*
-    void timer_Tick(object sender, EventArgs e)
-    {
-        Snake snake = null;
-        GameBoard Game = APISnakeClient.GetBoard();
-        if (Game != null)
-            snake = Game._Snake;
-
-        if (snake != null )//&& Turn != Game.TurnNumber)
-        {
-            try
-            {
-                //Turn = Game.TurnNumber;
-                Cells = new ObservableCollection<Cell>();
-                Cords cord = new Cords(0, 0);
-
-                for (cord.Y = 1; cord.Y <= Height; cord.Y++)
-                {
-                    for (cord.X = 1; cord.X <= Width; cord.X++)
-                    {
-                        if (!snake.CheckCollision(cord))
-                            Cells.Add(new Cell("Green"));
-                        else if (snake.CordsCmp(snake.Food, cord))
-                            Cells.Add(new Cell("Red"));
-                        else
-                            Cells.Add(new Cell("White"));
-                    }
-                }
-            }
-            catch (Exception E) { }
-        }
-    }*/
-        /*
-                //FinalMB
-            void timer_Tick(object sender, EventArgs e)
-            {
-
-                APISnakeClient.GetSnakeAsync().ContinueWith(t =>
-                {
-                    Game = t.Result;
-                });
-                if (Game != null)
-                {
-                    try
-                    {
-                        if (Turn != Game.TurnNumber)
-                        {
-                            Snake snake = Game._Snake;
-                            Turn = Game.TurnNumber;
-                            ObservableCollection<Cell> _Cells = new ObservableCollection<Cell>();
-                            Cords cord = new Cords(0, 0);
-
-                            for (cord.Y = 1; cord.Y <= Height; cord.Y++)
-                            {
-                                for (cord.X = 1; cord.X <= Width; cord.X++)
-                                {
-                                    if (!snake.CheckCollision(cord))
-                                        _Cells.Add(new Cell("Green"));
-                                    else if (snake.CordsCmp(snake.Food, cord))
-                                        _Cells.Add(new Cell("Red"));
-                                    else
-                                        _Cells.Add(new Cell("White"));
-
-                                }
-                            }
-                            Cells = _Cells;
-                        }
-                    }
-                    catch (Exception E) { }
-                }
-            }*/
-        /*
-        void timer_Tick(object sender, EventArgs e)
-        {
-            Snake snake = null;
-            GameBoard Game = null;
-            APISnakeClient.GetSnakeAsync().ContinueWith(t =>
-            {
-                Game = t.Result;
-                if (Game != null)
-                {
-                    try
-                    { 
-                        snake = Game._Snake;
-                        if (Turn != Game.TurnNumber)
-                        {
-                            Turn = Game.TurnNumber;
-                            ObservableCollection<Cell> _Cells = new ObservableCollection<Cell>();
-                            Cords cord = new Cords(0, 0);
-
-                            for (cord.Y = 1; cord.Y <= Height; cord.Y++)
-                            {
-                                for (cord.X = 1; cord.X <= Width; cord.X++)
-                                {
-                                    if (!snake.CheckCollision(cord))
-                                        _Cells.Add(new Cell("Green"));
-                                    else if (snake.CordsCmp(snake.Food, cord))
-                                        _Cells.Add(new Cell("Red"));
-                                    else
-                                        _Cells.Add(new Cell("White"));
-
-                                }
-                            }
-                            Cells = _Cells;
-                        }
-                    }
-                    catch (Exception E) { }
-                }
-            });
-        }*/
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
