@@ -23,7 +23,6 @@ namespace SnakeClient
         public int TimeTo { get; set; }
         public bool GameIsStarted { get; set; }
         public bool WantPlaying { get; set; }
-        DispatcherTimer timer { get; set; }
         public Client APISnakeClient { get; set; }
         #endregion
 
@@ -58,15 +57,6 @@ namespace SnakeClient
         private ObservableCollection<Cell> _cells = new ObservableCollection<Cell>();
         #endregion
 
-        #region constructor
-        public ApplicationViewModel()
-        {
-            SelectedMap = new Map(20, 20, 1000);
-            KeyPressedCommand = new RelayCommand((parameter) => KeyPressed(parameter));
-            APISnakeClient = new Client("https://localhost:44317");
-            CreateMap = "CreateMap";
-        }
-        #endregion
 
         #region commands
         // команда создания карты
@@ -152,6 +142,16 @@ namespace SnakeClient
         {
             var key = (string)parameter;
             APISnakeClient.DirectionChange(key).ContinueWith(t => { });
+        }
+        #endregion
+
+        #region constructor
+        public ApplicationViewModel()
+        {
+            SelectedMap = new Map(20, 20, 1000);
+            KeyPressedCommand = new RelayCommand((parameter) => KeyPressed(parameter));
+            APISnakeClient = new Client("https://localhost:44317");
+            CreateMap = "CreateMap";
         }
         #endregion
 
