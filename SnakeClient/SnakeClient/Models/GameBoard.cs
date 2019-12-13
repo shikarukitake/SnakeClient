@@ -17,6 +17,7 @@ namespace SnakeClient.Models
         private DateTime GameTime { get; set; }
         public Snake _Snake { get; set; }
 
+        public GameBoard() {}
         public GameBoard(int timeUntilNextTurnMS, int width, int height)
         {
             TimeUntilNextTurnMS = timeUntilNextTurnMS;

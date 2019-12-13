@@ -19,13 +19,13 @@ namespace SnakeClient
             _restClient.AddHandler("*", new JsonDeserializer());
         }
 
-        public async Task<Snake> GetSnakeAsync()
+        public async Task<GameBoard> GetSnakeAsync()
         {
             var request = new RestRequest("api/snake/get");
-            var response = await _restClient.ExecuteGetTaskAsync<Snake>(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                return null;
-            return response.Data;
+            var response = await _restClient.ExecuteGetTaskAsync<GameBoard>(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<GameBoard>(response.Content);
+            return null;
         }
 
         public async Task DirectionChange(string Direction)
@@ -35,15 +35,17 @@ namespace SnakeClient
             var response = await _restClient.ExecutePostTaskAsync(request);
         }
 
-        public Snake GetSnake()
+        public GameBoard GetBoard()
         {
-            Snake data;
+            GameBoard data;
             var request = new RestRequest("api/snake/get", Method.GET) { RequestFormat = DataFormat.Json };
-            var response = _restClient.Execute<Snake>(request);
-            if (response.Data == null)
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Snake>(response.Content);
+            var response = _restClient.Execute<GameBoard>(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<GameBoard>(response.Content);
             else
-                data = response.Data;
+                data = null;
+
             return data;
         }
 

@@ -37,6 +37,13 @@ namespace SnakeClient
             }
         }
 
+        public Map(int Width, int Height, int TimeUntilNextTurnMS)
+        {
+            this.Width = Width;
+            this.Height = Height;
+            this.TimeUntilNextTurnMS = TimeUntilNextTurnMS;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
